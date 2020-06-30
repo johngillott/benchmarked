@@ -94,7 +94,7 @@ func BenchmarkMarshalEncoder_map_string_string_segmentio_unsorted(b *testing.B) 
 	}
 }
 
-func BenchmarkMarshalEncoder_map_string_string(b *testing.B) {
+func BenchmarkMarshal_map_string_string(b *testing.B) {
 
 	m := mapPayload()
 

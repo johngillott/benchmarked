@@ -10,7 +10,7 @@ import (
 	"github.com/wI2L/jettison"
 )
 
-// go test -benchmem -run=^$ github.com/johngillott/gobenchmarked/encoding/json -bench BenchmarkMarshal -count=5 | tee bench.txt && benchstat bench.txt
+// go test -benchmem -run=^$ github.com/johngillott/gobenchmark/encoding/json -bench BenchmarkMarshal -count=5 | tee bench.txt && benchstat bench.txt
 
 func BenchmarkMarshalEncoder_map_string_string_jingo_sorted(b *testing.B) {
 	b.ReportAllocs()

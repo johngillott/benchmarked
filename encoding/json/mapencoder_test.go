@@ -228,7 +228,7 @@ func BenchmarkMarshalEncoder_map_marshaltext_string_segmentio_unsorted(b *testin
 }
 
 func BenchmarkMarshal_map_marshaltext_string(b *testing.B) {
-
+	// TODO: FIXME
 	b.SkipNow()
 	benchMarshal(b, mapTextMarshalPayload())
 }

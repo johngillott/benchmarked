@@ -47,3 +47,15 @@ func mapPayload() map[string]string {
 		"Worcestershire":     "England",
 	}
 }
+
+func mapTextMarshalPayload() map[*textStruct]string {
+	// TODO: more
+	return map[*textStruct]string{
+		{[]byte("Bedfordshire")}:    "England",
+		{[]byte("Buckinghamshire")}: "England",
+		{[]byte("Cambridgeshire")}:  "England",
+		{[]byte("Cheshire")}:        "England",
+		{[]byte("Cleveland")}:       "England",
+		{[]byte("Cornwall")}:        "England",
+	}
+}

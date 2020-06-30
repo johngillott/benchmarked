@@ -1,6 +1,7 @@
 package json
 
 import (
+	"encoding"
 	"encoding/json"
 	"testing"
 
@@ -94,11 +95,9 @@ func BenchmarkMarshalEncoder_map_string_string_segmentio_unsorted(b *testing.B) 
 	}
 }
 
-func BenchmarkMarshalEncoder_map_string_string(b *testing.B) {
+func BenchmarkMarshal_map_string_string(b *testing.B) {
 
-	m := mapPayload()
-
-	benchMarshal(b, m)
+	benchMarshal(b, mapPayload())
 }
 
 func benchMarshal(b *testing.B, x interface{}) {
@@ -128,4 +127,108 @@ func benchMarshal(b *testing.B, x interface{}) {
 			}
 		})
 	}
+}
+
+type textStruct struct {
+	text []byte
+}
+
+func (t *textStruct) MarshalText() ([]byte, error) { return t.text, nil }
+
+var _ encoding.TextMarshaler = &textStruct{}
+
+func BenchmarkMarshalEncoder_map_marshaltext_string_jingo_sorted(b *testing.B) {
+	b.ReportAllocs()
+
+	m := mapPayload()
+
+	enc := jingo.NewMapEncoder(map[string]string{})
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+
+		buf := jingo.NewBufferFromPool()
+		enc.Marshal(&m, buf)
+
+		b.SetBytes(int64(len(buf.Bytes)))
+
+		buf.ReturnToPool()
+	}
+}
+
+func BenchmarkMarshalEncoder_map_marshaltext_string_jingo_unsorted(b *testing.B) {
+	b.ReportAllocs()
+
+	m := mapPayload()
+
+	cfg := jingo.Config{}
+	cfg.SetSortMapKeys(false)
+	enc := jingo.NewMapEncoderWithConfig(map[string]string{}, cfg)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+
+		buf := jingo.NewBufferFromPool()
+		enc.Marshal(&m, buf)
+		b.SetBytes(int64(len(buf.Bytes)))
+
+		buf.ReturnToPool()
+	}
+}
+
+func BenchmarkMarshalEncoder_map_marshaltext_string_segmentio_sorted(b *testing.B) {
+
+	// TODO: FIXME
+	b.SkipNow()
+
+	b.ReportAllocs()
+
+	m := mapTextMarshalPayload()
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+
+		buf := jingo.NewBufferFromPool()
+		enc := segmentio.NewEncoder(buf)
+
+		if err := enc.Encode(&m); err != nil {
+			b.Fatal("Encode:", err)
+		}
+
+		b.SetBytes(int64(len(buf.Bytes)))
+		buf.ReturnToPool()
+	}
+}
+
+func BenchmarkMarshalEncoder_map_marshaltext_string_segmentio_unsorted(b *testing.B) {
+
+	// TODO: FIXME
+	b.SkipNow()
+
+	b.ReportAllocs()
+
+	m := mapTextMarshalPayload()
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+
+		buf := jingo.NewBufferFromPool()
+		enc := segmentio.NewEncoder(buf)
+		enc.SetSortMapKeys(false)
+
+		if err := enc.Encode(&m); err != nil {
+			b.Fatal("Encode:", err)
+		}
+
+		b.SetBytes(int64(len(buf.Bytes)))
+		buf.ReturnToPool()
+	}
+}
+
+func BenchmarkMarshal_map_marshaltext_string(b *testing.B) {
+
+	b.SkipNow()
+	benchMarshal(b, mapTextMarshalPayload())
 }
